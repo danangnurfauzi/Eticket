@@ -326,7 +326,7 @@ public class Dashboard extends AppCompatActivity {
 
         /*********** print head*******/
         String receiptHead = "************************"
-                + "   TIKET MASUK WISATA  "+"\n"
+                + "   TIKET MASUK TEST BROH WISATA  "+"\n"
                 + "       KAWAH PUTIH  "+"\n"
                 + "************************"
                 + "\n";
