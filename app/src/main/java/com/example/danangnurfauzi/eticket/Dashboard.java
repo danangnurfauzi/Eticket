@@ -162,7 +162,9 @@ public class Dashboard extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //printDemoContent();
-                printStruk();
+                //printStruk();
+                printStruk2();
+                //print1DBarcode();
             }
         });
 
@@ -482,6 +484,117 @@ public class Dashboard extends AppCompatActivity {
         byte[] senddata = PocketPos.FramePack(PocketPos.FRAME_TOF_PRINT, totalByte, 0, totalByte.length);
 
         sendData(senddata);
+    }
+
+    private void printStruk2() {
+
+        StringBuilder header = new StringBuilder();
+
+        header.append("*****************************" + "\n");
+        header.append("TIKET MASUK WISATA" + "\n");
+        header.append("KAWAH PUTIH" + "\n");
+        header.append("*****************************" + "\n");
+
+        StringBuilder contentSb	= new StringBuilder();
+
+        contentSb.append("-----------------------------" + "\n");
+        contentSb.append("TANGGAL   : 12/07/2016 15.19" + "\n");
+        contentSb.append("OPERATOR  : GANI GAIRAH A." + "\n");
+        contentSb.append("-----------------------------" + "\n");
+        contentSb.append("DOMESTIK WD    6     300,000" + "\n");
+        contentSb.append("MOBIL WD       1     150,000" + "\n");
+        contentSb.append("-----------------------------" + "\n");
+        contentSb.append("TOTAL     :          450,000" + "\n");
+        contentSb.append("-----------------------------" + "\n");
+
+        String message	= "Perhutani menyatakan struk ini sebagai bukti pembayaran yang sah." + "\n";
+
+        String message2	= "Informasi Hubungi Call Center: " + "\n"
+                + "1 500 235 Atau Hub Perhutani Terdekat." + "\n";
+
+        long milis		= System.currentTimeMillis();
+        String date		= DateUtil.timeMilisToString(milis, "dd-MM-yy / HH:mm")  + "\n\n";
+
+        byte[] titleByte	= Printer.printfont(header.toString(), FontDefine.FONT_24PX,FontDefine.Align_CENTER,
+                (byte)0x1A, PocketPos.LANGUAGE_ENGLISH);
+
+        byte[] content1Byte	= Printer.printfont(contentSb.toString(), FontDefine.FONT_24PX,FontDefine.Align_LEFT,
+                (byte)0x1A, PocketPos.LANGUAGE_ENGLISH);
+
+        byte[] messageByte	= Printer.printfont(message, FontDefine.FONT_24PX,FontDefine.Align_CENTER,  (byte)0x1A,
+                PocketPos.LANGUAGE_ENGLISH);
+
+        byte[] message2Byte	= Printer.printfont(message2, FontDefine.FONT_24PX,FontDefine.Align_CENTER,  (byte)0x1A,
+                PocketPos.LANGUAGE_ENGLISH);
+
+        byte[] dateByte		= Printer.printfont(date, FontDefine.FONT_24PX,FontDefine.Align_LEFT, (byte)0x1A,
+                PocketPos.LANGUAGE_ENGLISH);
+
+        byte[] totalByte	= new byte[titleByte.length + content1Byte.length + messageByte.length +
+                 message2Byte.length + dateByte.length];
+
+
+        int offset = 0;
+        System.arraycopy(titleByte, 0, totalByte, offset, titleByte.length);
+        offset += titleByte.length;
+
+        System.arraycopy(content1Byte, 0, totalByte, offset, content1Byte.length);
+        offset += content1Byte.length;
+
+        System.arraycopy(messageByte, 0, totalByte, offset, messageByte.length);
+        offset += messageByte.length;
+
+        System.arraycopy(message2Byte, 0, totalByte, offset, message2Byte.length);
+        offset += message2Byte.length;
+
+        System.arraycopy(dateByte, 0, totalByte, offset, dateByte.length);
+
+        byte[] senddata = PocketPos.FramePack(PocketPos.FRAME_TOF_PRINT, totalByte, 0, totalByte.length);
+
+        //print1DBarcode();
+
+        sendData(senddata);
+
+    }
+
+    private void print1DBarcode() {
+        String content	= "6901234567892";
+
+        //1D barcode format (hex): 1d 6b 02 0d + barcode data
+
+        byte[] formats	= {(byte) 0x1d, (byte) 0x6b, (byte) 0x02, (byte) 0x0d};
+        byte[] contents	= content.getBytes();
+
+        byte[] bytes	= new byte[formats.length + contents.length];
+
+        System.arraycopy(formats, 0, bytes, 0, formats.length);
+        System.arraycopy(contents, 0, bytes, formats.length, contents.length);
+
+        sendData(bytes);
+
+        byte[] newline 	= Printer.printfont("\n\n",FontDefine.FONT_32PX,FontDefine.Align_CENTER,(byte)0x1A,PocketPos.LANGUAGE_ENGLISH);
+
+        sendData(newline);
+    }
+
+    private void print2DBarcode() {
+        String content 	= "Lorenz Blog - www.londatiga.net";
+
+        //2D barcode format (hex) : 1d 6b 10 00 00 00 00 00 1f + barcode data
+
+        byte[] formats	= {(byte) 0x1d, (byte) 0x6b, (byte) 0x10, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x1f};
+        byte[] contents	= content.getBytes();
+        byte[] bytes	= new byte[formats.length + contents.length];
+
+        System.arraycopy(formats, 0, bytes, 0, formats.length);
+        System.arraycopy(contents, 0, bytes, formats.length, contents.length);
+
+        sendData(bytes);
+
+        byte[] newline 	= Printer.printfont("\n\n",FontDefine.FONT_32PX,FontDefine.Align_CENTER,(byte)0x1A,PocketPos.LANGUAGE_ENGLISH);
+
+        sendData(newline);
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
