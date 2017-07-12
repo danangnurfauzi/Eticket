@@ -326,7 +326,7 @@ public class Dashboard extends AppCompatActivity {
 
         /*********** print head*******/
         String receiptHead = "************************"
-                + "   TIKET MASUK TEST BROH WISATA  "+"\n"
+                + "   TIKET MASUK WISATA  "+"\n"
                 + "       KAWAH PUTIH  "+"\n"
                 + "************************"
                 + "\n";
@@ -412,33 +412,29 @@ public class Dashboard extends AppCompatActivity {
 
     private void printStruk() {
 
-        String receiptHead = "************************"
+        String receiptHead = "*****************************"+"\n"
                 + "   TIKET MASUK WISATA  "+"\n"
                 + "       KAWAH PUTIH  "+"\n"
-                + "************************"
+                + "*****************************"
                 + "\n";
-
-        String titleStr	= "STRUK PEMBAYARAN TAGIHAN LISTRIK" + "\n\n";
 
         StringBuilder contentSb	= new StringBuilder();
 
-        contentSb.append("WISAT     : 435353535435353" + "\n");
-        contentSb.append("NAMA      : LORENSIUS WLT" + "\n");
-        contentSb.append("TRF/DAYA  : 50/12244 VA" + "\n");
-        contentSb.append("BL/TH     : 02/14" + "\n");
-        contentSb.append("ST/MTR    : 0293232" + "\n");
-        contentSb.append("RP TAG    : Rp. 100.000" + "\n");
-        contentSb.append("JPA REF   :" + "\n");
+        contentSb.append("-----------------------------" + "\n");
+        contentSb.append("TANGGAL   : 12/07/2016 15.19" + "\n");
+        contentSb.append("OPERATOR  : GANI GAIRAH A." + "\n");
+        contentSb.append("-----------------------------" + "\n");
+        contentSb.append("DOMESTIK WD    6     300,000" + "\n");
+        contentSb.append("MOBIL WD       1     150,000" + "\n");
+        contentSb.append("-----------------------------" + "\n");
+        contentSb.append("TOTAL     :          450,000" + "\n");
+        contentSb.append("-----------------------------" + "\n");
 
         StringBuilder content2Sb = new StringBuilder();
 
-        content2Sb.append("ADM BANK  : Rp. 1.600" + "\n");
-        content2Sb.append("RP BAYAR  : Rp. 101.600,00" + "\n");
-
-        String jpaRef	= "XXXX-XXXX-XXXX-XXXX" + "\n";
-        String message	= "PLN menyatakan struk ini sebagai bukti pembayaran yang sah." + "\n";
-        String message2	= "Rincian tagihan dapat diakses di www.pln.co.id Informasi Hubungi Call Center: "
-                + "123 Atau Hub PLN Terdekat: 444" + "\n";
+        String message	= "Perhutani menyatakan struk ini sebagai bukti pembayaran yang sah." + "\n";
+        String message2	= "Informasi Hubungi Call Center: "
+                + "1 500 235 Atau Hub Perhutani Terdekat." + "\n";
 
         long milis		= System.currentTimeMillis();
         String date		= DateUtil.timeMilisToString(milis, "dd-MM-yy / HH:mm")  + "\n\n";
@@ -448,9 +444,6 @@ public class Dashboard extends AppCompatActivity {
 
         byte[] content1Byte	= Printer.printfont(contentSb.toString(), FontDefine.FONT_24PX,FontDefine.Align_LEFT,
                 (byte)0x1A, PocketPos.LANGUAGE_ENGLISH);
-
-        byte[] refByte		= Printer.printfont(jpaRef, FontDefine.FONT_24PX,FontDefine.Align_CENTER,  (byte)0x1A,
-                PocketPos.LANGUAGE_ENGLISH);
 
         byte[] messageByte	= Printer.printfont(message, FontDefine.FONT_24PX,FontDefine.Align_CENTER,  (byte)0x1A,
                 PocketPos.LANGUAGE_ENGLISH);
@@ -464,7 +457,7 @@ public class Dashboard extends AppCompatActivity {
         byte[] dateByte		= Printer.printfont(date, FontDefine.FONT_24PX,FontDefine.Align_LEFT, (byte)0x1A,
                 PocketPos.LANGUAGE_ENGLISH);
 
-        byte[] totalByte	= new byte[titleByte.length + content1Byte.length + refByte.length + messageByte.length +
+        byte[] totalByte	= new byte[titleByte.length + content1Byte.length + messageByte.length +
                 content2Byte.length + message2Byte.length + dateByte.length];
 
 
@@ -474,9 +467,6 @@ public class Dashboard extends AppCompatActivity {
 
         System.arraycopy(content1Byte, 0, totalByte, offset, content1Byte.length);
         offset += content1Byte.length;
-
-        System.arraycopy(refByte, 0, totalByte, offset, refByte.length);
-        offset += refByte.length;
 
         System.arraycopy(messageByte, 0, totalByte, offset, messageByte.length);
         offset += messageByte.length;
