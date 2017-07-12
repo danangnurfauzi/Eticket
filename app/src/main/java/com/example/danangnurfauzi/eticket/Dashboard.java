@@ -161,7 +161,8 @@ public class Dashboard extends AppCompatActivity {
         mCetakBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                printDemoContent();
+                //printDemoContent();
+                printStruk();
             }
         });
 
@@ -325,7 +326,8 @@ public class Dashboard extends AppCompatActivity {
 
         /*********** print head*******/
         String receiptHead = "************************"
-                + "   P25/M Test Print"+"\n"
+                + "   TIKET MASUK WISATA  "+"\n"
+                + "       KAWAH PUTIH  "+"\n"
                 + "************************"
                 + "\n";
 
@@ -372,7 +374,7 @@ public class Dashboard extends AppCompatActivity {
         String receiptTail =  "Test Completed" + "\n"
                 + "************************" + "\n";
 
-        String receiptWeb =  "** www.londatiga.net ** " + "\n\n\n";
+        String receiptWeb =  "** union project ** " + "\n\n\n";
 
         byte[] foot = Printer.printfont(receiptTail,FontDefine.FONT_32PX,FontDefine.Align_CENTER,(byte)0x1A,PocketPos.LANGUAGE_ENGLISH);
         byte[] web	= Printer.printfont(receiptWeb,FontDefine.FONT_32PX,FontDefine.Align_CENTER,(byte)0x1A,PocketPos.LANGUAGE_ENGLISH);
@@ -404,6 +406,90 @@ public class Dashboard extends AppCompatActivity {
         offset+=web.length;
 
         byte[] senddata = PocketPos.FramePack(PocketPos.FRAME_TOF_PRINT, totladata, 0, totladata.length);
+
+        sendData(senddata);
+    }
+
+    private void printStruk() {
+
+        String receiptHead = "************************"
+                + "   TIKET MASUK WISATA  "+"\n"
+                + "       KAWAH PUTIH  "+"\n"
+                + "************************"
+                + "\n";
+
+        String titleStr	= "STRUK PEMBAYARAN TAGIHAN LISTRIK" + "\n\n";
+
+        StringBuilder contentSb	= new StringBuilder();
+
+        contentSb.append("WISAT     : 435353535435353" + "\n");
+        contentSb.append("NAMA      : LORENSIUS WLT" + "\n");
+        contentSb.append("TRF/DAYA  : 50/12244 VA" + "\n");
+        contentSb.append("BL/TH     : 02/14" + "\n");
+        contentSb.append("ST/MTR    : 0293232" + "\n");
+        contentSb.append("RP TAG    : Rp. 100.000" + "\n");
+        contentSb.append("JPA REF   :" + "\n");
+
+        StringBuilder content2Sb = new StringBuilder();
+
+        content2Sb.append("ADM BANK  : Rp. 1.600" + "\n");
+        content2Sb.append("RP BAYAR  : Rp. 101.600,00" + "\n");
+
+        String jpaRef	= "XXXX-XXXX-XXXX-XXXX" + "\n";
+        String message	= "PLN menyatakan struk ini sebagai bukti pembayaran yang sah." + "\n";
+        String message2	= "Rincian tagihan dapat diakses di www.pln.co.id Informasi Hubungi Call Center: "
+                + "123 Atau Hub PLN Terdekat: 444" + "\n";
+
+        long milis		= System.currentTimeMillis();
+        String date		= DateUtil.timeMilisToString(milis, "dd-MM-yy / HH:mm")  + "\n\n";
+
+        byte[] titleByte	= Printer.printfont(receiptHead, FontDefine.FONT_24PX,FontDefine.Align_CENTER,
+                (byte)0x1A, PocketPos.LANGUAGE_ENGLISH);
+
+        byte[] content1Byte	= Printer.printfont(contentSb.toString(), FontDefine.FONT_24PX,FontDefine.Align_LEFT,
+                (byte)0x1A, PocketPos.LANGUAGE_ENGLISH);
+
+        byte[] refByte		= Printer.printfont(jpaRef, FontDefine.FONT_24PX,FontDefine.Align_CENTER,  (byte)0x1A,
+                PocketPos.LANGUAGE_ENGLISH);
+
+        byte[] messageByte	= Printer.printfont(message, FontDefine.FONT_24PX,FontDefine.Align_CENTER,  (byte)0x1A,
+                PocketPos.LANGUAGE_ENGLISH);
+
+        byte[] content2Byte	= Printer.printfont(content2Sb.toString(), FontDefine.FONT_24PX,FontDefine.Align_LEFT,
+                (byte)0x1A, PocketPos.LANGUAGE_ENGLISH);
+
+        byte[] message2Byte	= Printer.printfont(message2, FontDefine.FONT_24PX,FontDefine.Align_CENTER,  (byte)0x1A,
+                PocketPos.LANGUAGE_ENGLISH);
+
+        byte[] dateByte		= Printer.printfont(date, FontDefine.FONT_24PX,FontDefine.Align_LEFT, (byte)0x1A,
+                PocketPos.LANGUAGE_ENGLISH);
+
+        byte[] totalByte	= new byte[titleByte.length + content1Byte.length + refByte.length + messageByte.length +
+                content2Byte.length + message2Byte.length + dateByte.length];
+
+
+        int offset = 0;
+        System.arraycopy(titleByte, 0, totalByte, offset, titleByte.length);
+        offset += titleByte.length;
+
+        System.arraycopy(content1Byte, 0, totalByte, offset, content1Byte.length);
+        offset += content1Byte.length;
+
+        System.arraycopy(refByte, 0, totalByte, offset, refByte.length);
+        offset += refByte.length;
+
+        System.arraycopy(messageByte, 0, totalByte, offset, messageByte.length);
+        offset += messageByte.length;
+
+        System.arraycopy(content2Byte, 0, totalByte, offset, content2Byte.length);
+        offset += content2Byte.length;
+
+        System.arraycopy(message2Byte, 0, totalByte, offset, message2Byte.length);
+        offset += message2Byte.length;
+
+        System.arraycopy(dateByte, 0, totalByte, offset, dateByte.length);
+
+        byte[] senddata = PocketPos.FramePack(PocketPos.FRAME_TOF_PRINT, totalByte, 0, totalByte.length);
 
         sendData(senddata);
     }
