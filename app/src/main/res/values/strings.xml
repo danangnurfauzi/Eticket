@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">UNION</string>
+    <string name="login_label">Login</string>
+    <string name="register_label">Register</string>
+    <string-array name="jenis_user">
+        <item>Super User</item>
+        <item>Sales Karyawan Perhutani</item>
+        <item>Sales Umum</item>
+        <item>Storage Point</item>
+    </string-array>
+    <string name="gender1">Laki - Laki</string>
+    <string name="gender2">Perempuan</string>
+
+    <string name="pengunjung1">Domestik</string>
+    <string name="pengunjung2">Mancanegara</string>
+
+    <string name="use_vehicle1">Memakai</string>
+    <string name="use_vehicle2">Tidak Memakai</string>
+
+    <string name="title_activity_dashboard">Dashboard</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="empty_list_text">Tidak Ada Data</string>
+
+    <string name="text_enable_bluetooth">Enable Bluetooth</string>
+    <string name="text_connect">Connect</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="text_scan_devices">Scan Devices</string>
+</resources>
