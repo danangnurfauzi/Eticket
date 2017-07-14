@@ -30,8 +30,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     // Login Table Columns names
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
-    private static final String KEY_NPK = "npk";
-    private static final String KEY_UID = "uid";
+    private static final String KEY_JENISUSER = "jenisUser";
+    private static final String KEY_USERAKSESLOKER = "userAksesLoker";
+    private static final String KEY_PAKSESLOKER = "pAksesLoker";
 
     public SQLiteHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -41,8 +42,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_USER + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
-                + KEY_NPK + " TEXT UNIQUE," + KEY_UID + " TEXT" + ")";
+                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT UNIQUE,"
+                + KEY_JENISUSER + " TEXT," + KEY_USERAKSESLOKER + " TEXT,"
+                + KEY_PAKSESLOKER + " TEXT" + ")";
         db.execSQL(CREATE_LOGIN_TABLE);
 
         Log.d(TAG, "Database tables created");
@@ -61,13 +63,14 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     /**
      * Storing user details in database
      * */
-    public void addUser(String name, String npk, String uid) {
+    public void addUser(String name, String jenisUser, String userAksesLoker, String pAksesLoker) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_NAME, name); // Name
-        values.put(KEY_NPK, npk); // NPK
-        values.put(KEY_UID, uid); // UID
+        values.put(KEY_NAME, name);
+        values.put(KEY_JENISUSER, jenisUser);
+        values.put(KEY_USERAKSESLOKER, userAksesLoker);
+        values.put(KEY_PAKSESLOKER, pAksesLoker);
 
         // Inserting Row
         long id = db.insert(TABLE_USER, null, values);
@@ -89,8 +92,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.moveToFirst();
         if (cursor.getCount() > 0) {
             user.put("name", cursor.getString(1));
-            user.put("npk", cursor.getString(2));
-            user.put("uid", cursor.getString(3));
+            user.put("jenisUser", cursor.getString(2));
+            user.put("userAksesLoker", cursor.getString(3));
+            user.put("pAksesLoker", cursor.getString(4));
         }
         cursor.close();
         db.close();

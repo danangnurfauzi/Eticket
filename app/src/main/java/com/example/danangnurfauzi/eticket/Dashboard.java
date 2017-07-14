@@ -42,6 +42,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Set;
 
+import java.util.HashMap;
+
 /**
  * Created by danangnurfauzi on 7/11/17.
  */
@@ -55,6 +57,8 @@ public class Dashboard extends AppCompatActivity {
     private Button mConnectBtn;
     private Button mEnableBtn;
     private Spinner mDeviceSp;
+    private SQLiteHandler db;
+    private SessionManager session;
 
     private ProgressDialog mProgressDlg;
     private ProgressDialog mConnectingDlg;
@@ -69,6 +73,24 @@ public class Dashboard extends AppCompatActivity {
         mEnableBtn  = (Button) findViewById(R.id.btn_enable);
         mConnectBtn = (Button) findViewById(R.id.btn_connect);
         mDeviceSp   = (Spinner) findViewById(R.id.sp_device);
+
+        // SqLite database handler
+        db = new SQLiteHandler(getApplicationContext());
+
+        // session manager
+        session = new SessionManager(getApplicationContext());
+
+        if (!session.isLoggedIn()) {
+            logOutUser();
+        }
+
+        // Fetching user details from sqlite
+        HashMap<String, String> user = db.getUserDetails();
+
+        String nameSql = user.get("name");
+        String jenisUserSql = user.get("jenisUser");
+        String userAksesLokerSql = user.get("userAksesLoker");
+        String pAksesLokerSql = user.get("pAksesLoker");
 
         mBluetoothAdapter	= BluetoothAdapter.getDefaultAdapter();
 
@@ -181,6 +203,21 @@ public class Dashboard extends AppCompatActivity {
 
     }
 
+    /**
+     * Logging out the user. Will set isLoggedIn flag to false in shared
+     * preferences Clears the user data from sqlite users table
+     * */
+    private void logOutUser() {
+        session.setLogin(false);
+
+        db.deleteUsers();
+
+        // Launching the login activity
+        Intent intent = new Intent(Dashboard.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     public boolean onCreateOptionsMenu(Menu menu){
 
         getMenuInflater().inflate(R.menu.menu,menu);
@@ -193,6 +230,8 @@ public class Dashboard extends AppCompatActivity {
 
         if (item.getItemId() == R.id.action_scan) {
             mBluetoothAdapter.startDiscovery();
+        } else if (item.getItemId() == R.id.log_out){
+            logOutUser();
         }
 
         return super.onOptionsItemSelected(item);

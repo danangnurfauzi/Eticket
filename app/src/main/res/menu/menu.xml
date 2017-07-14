@@ -4,4 +4,9 @@
         android:id="@+id/action_scan"
         android:showAsAction="always"
         android:title="@string/text_scan_devices"/>
+
+    <item
+        android:id="@+id/log_out"
+        android:title="Log Out"
+        android:showAsAction="always" />
 </menu>
