@@ -84,7 +84,7 @@ public class Dashboard extends AppCompatActivity {
             logOutUser();
         }
 
-        // Fetching user details from sqlite
+        //// Fetching user details from sqlite
         HashMap<String, String> user = db.getUserDetails();
 
         String nameSql = user.get("name");
