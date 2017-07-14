@@ -180,7 +180,7 @@ public class Dashboard extends AppCompatActivity {
                 }
             }
 
-            ProgressDialog mProgressDlg 	= new ProgressDialog(this);
+            mProgressDlg 	= new ProgressDialog(this);
 
             mProgressDlg.setMessage("Scanning...");
             mProgressDlg.setCancelable(false);
@@ -251,10 +251,6 @@ public class Dashboard extends AppCompatActivity {
         mCetakBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //printDemoContent();
-                //printStruk();
-                //printStruk2();
-                //print1DBarcode();
                 printTiket();
             }
         });
@@ -725,9 +721,29 @@ public class Dashboard extends AppCompatActivity {
 
         if (item.getItemId() == R.id.action_scan) {
             mBluetoothAdapter.startDiscovery();
+            showToast("nyecan untu biru");
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPause() {
+        if (mBluetoothAdapter != null) {
+            if (mBluetoothAdapter.isDiscovering()) {
+                mBluetoothAdapter.cancelDiscovery();
+            }
+        }
+
+        if (mConnector != null) {
+            try {
+                mConnector.disconnect();
+            } catch (P25ConnectionException e) {
+                e.printStackTrace();
+            }
+        }
+
+        super.onPause();
     }
 
     private void showUnsupported() {
