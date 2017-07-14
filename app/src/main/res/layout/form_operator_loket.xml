@@ -61,14 +61,14 @@
                 android:id="@+id/Pengunjung1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pengunjung1"
+                android:text="Nusantara"
                 />
 
             <RadioButton
                 android:id="@+id/Pengunjung2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pengunjung2" />
+                android:text="Mancanegara" />
 
         </RadioGroup>
 
