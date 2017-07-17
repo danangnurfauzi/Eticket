@@ -785,7 +785,6 @@ public class Dashboard extends AppCompatActivity {
             mBluetoothAdapter.startDiscovery();
         } else if (item.getItemId() == R.id.log_out){
             logOutUser();
-            showToast("nyecan untu biru");
         }
 
         return super.onOptionsItemSelected(item);
