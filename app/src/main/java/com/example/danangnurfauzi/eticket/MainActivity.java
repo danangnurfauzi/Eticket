@@ -28,7 +28,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "login";
-    private static final String URL_FOR_LOGIN = "http://118.97.50.196/union/auth/login.pht";
+    private static final String URL_FOR_LOGIN = "http://118.97.50.196/union/api/auth/login.pht";
     private ProgressDialog progressDialog;
     private SessionManager session;
     private SQLiteHandler db;
