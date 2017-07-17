@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Button;
 import android.widget.ArrayAdapter;
@@ -61,13 +62,17 @@ public class Dashboard extends AppCompatActivity {
 
     private BluetoothAdapter mBluetoothAdapter;
     private ArrayList<BluetoothDevice> mDeviceList = new ArrayList<BluetoothDevice>();
+    RadioGroup radioWisman, radioKendaraan;
+    EditText jumlahOrang, price;
 
     private Button mCetakBtn;
+    private TextView roleLabel, kendaraanLabel, pengunjungLabel, priceLabel;
     private Button mConnectBtn;
     private Button mEnableBtn;
     private Spinner mDeviceSp;
     private SQLiteHandler db;
     private SessionManager session;
+
 
     private ProgressDialog mProgressDlg;
     private ProgressDialog mConnectingDlg;
@@ -78,10 +83,14 @@ public class Dashboard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.form_operator_loket);
 
-        mCetakBtn   = (Button) findViewById(R.id.cetakTiket);
-        mEnableBtn  = (Button) findViewById(R.id.btn_enable);
-        mConnectBtn = (Button) findViewById(R.id.btn_connect);
-        mDeviceSp   = (Spinner) findViewById(R.id.sp_device);
+        roleLabel       = (TextView) findViewById(R.id.role_label);
+        kendaraanLabel  = (TextView) findViewById(R.id.kendaraan_label);
+        pengunjungLabel = (TextView) findViewById(R.id.pengunjung_label);
+        priceLabel      = (TextView) findViewById(R.id.price_label);
+        mCetakBtn       = (Button) findViewById(R.id.cetakTiket);
+        mEnableBtn      = (Button) findViewById(R.id.btn_enable);
+        mConnectBtn     = (Button) findViewById(R.id.btn_connect);
+        mDeviceSp       = (Spinner) findViewById(R.id.sp_device);
 
         // SqLite database handler
         db = new SQLiteHandler(getApplicationContext());
@@ -103,10 +112,10 @@ public class Dashboard extends AppCompatActivity {
 
         mBluetoothAdapter	= BluetoothAdapter.getDefaultAdapter();
 
-        RadioGroup radioWisman     = (RadioGroup) findViewById(R.id.jenis_pengunjung);
-        RadioGroup radioKendaraan  = (RadioGroup) findViewById(R.id.kendaraan);
-        EditText jumlahOrang       = (EditText) findViewById(R.id.jumlah_orang);
-        final EditText price             = (EditText) findViewById(R.id.price);
+        radioWisman     = (RadioGroup) findViewById(R.id.jenis_pengunjung);
+        radioKendaraan  = (RadioGroup) findViewById(R.id.kendaraan);
+        jumlahOrang     = (EditText) findViewById(R.id.jumlah_orang);
+        price           = (EditText) findViewById(R.id.price);
 
         // This overrides the radiogroup onCheckListener
         radioWisman.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
@@ -185,6 +194,7 @@ public class Dashboard extends AppCompatActivity {
 
         if(mBluetoothAdapter == null){
             showToast("HP ne ra nduwe bluetooth :') ");
+            showDisabled();
         }else {
             if (!mBluetoothAdapter.isEnabled()) {
                 //showToast("Bluetooth e mati :') ");
@@ -750,6 +760,20 @@ public class Dashboard extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu){
 
         getMenuInflater().inflate(R.menu.menu,menu);
+        MenuItem actionScan = menu.findItem(R.id.action_scan);
+
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        // show the button when some condition is true
+        if (mBluetoothAdapter == null) {
+            actionScan.setVisible(false);
+        } else {
+            if(!mBluetoothAdapter.isEnabled()) {
+                actionScan.setVisible(false);
+            } else {
+                actionScan.setVisible(true);
+            }
+        }
 
         return super.onCreateOptionsMenu(menu);
 
@@ -797,14 +821,32 @@ public class Dashboard extends AppCompatActivity {
     private void showDisabled() {
         showToast("Bluetooth disabled");
 
-        mEnableBtn.setVisibility(View.VISIBLE);
+        roleLabel.setVisibility(View.GONE);
+        kendaraanLabel.setVisibility(View.GONE);
+        pengunjungLabel.setVisibility(View.GONE);
+        priceLabel.setVisibility(View.GONE);
+        radioWisman.setVisibility(View.GONE);
+        radioKendaraan.setVisibility(View.GONE);
+        jumlahOrang.setVisibility(View.GONE);
+        price.setVisibility(View.GONE);
+        mCetakBtn.setVisibility(View.GONE);
         mConnectBtn.setVisibility(View.GONE);
         mDeviceSp.setVisibility(View.GONE);
+        mEnableBtn.setVisibility(View.VISIBLE);
     }
 
     private void showEnabled() {
         showToast("Bluetooth enabled");
 
+        roleLabel.setVisibility(View.VISIBLE);
+        kendaraanLabel.setVisibility(View.VISIBLE);
+        pengunjungLabel.setVisibility(View.VISIBLE);
+        priceLabel.setVisibility(View.VISIBLE);
+        radioWisman.setVisibility(View.VISIBLE);
+        radioKendaraan.setVisibility(View.VISIBLE);
+        jumlahOrang.setVisibility(View.VISIBLE);
+        price.setVisibility(View.VISIBLE);
+        mCetakBtn.setVisibility(View.VISIBLE);
         mEnableBtn.setVisibility(View.GONE);
         mConnectBtn.setVisibility(View.VISIBLE);
         mDeviceSp.setVisibility(View.VISIBLE);
