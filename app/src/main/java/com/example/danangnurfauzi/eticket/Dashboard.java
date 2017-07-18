@@ -299,10 +299,6 @@ public class Dashboard extends AppCompatActivity {
 
     }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> master
     /**
      * Logging out the user. Will set isLoggedIn flag to false in shared
      * preferences Clears the user data from sqlite users table
@@ -786,18 +782,14 @@ public class Dashboard extends AppCompatActivity {
 
         if (item.getItemId() == R.id.action_scan) {
             mBluetoothAdapter.startDiscovery();
-<<<<<<< HEAD
-        } else if (item.getItemId() == R.id.log_out){
-            logOutUser();
-            showToast("nyecan untu biru");
-=======
             finish();
             startActivity(getIntent());
 
         } else if (item.getItemId() == R.id.log_out){
             logOutUser();
+            finish();
+            startActivity(getIntent());
 
->>>>>>> master
         }
 
         return super.onOptionsItemSelected(item);
@@ -1078,10 +1070,7 @@ public class Dashboard extends AppCompatActivity {
         contentSb2.append("--------------------------------" + "\n");
         contentSb2.append("TANGGAL   : " + date + "\n");
         contentSb2.append("OPERATOR  : GANI GAIRAH A." + "\n");
-<<<<<<< HEAD
-=======
 
->>>>>>> master
         contentSb2.append("--------------------------------" + "\n");
 
         String message	= "Perhutani menyatakan struk ini \n  sebagai bukti pembayaran sah" + "\n";
@@ -1280,10 +1269,7 @@ public class Dashboard extends AppCompatActivity {
                 "b81c c000 0000 0000 0000 0000 0000 0000" +
                 "0000 0000 0300 3ff3 0198 1c3e 00e6 01f8" +
                 "18c0 ");
-<<<<<<< HEAD
-=======
 
->>>>>>> master
         contentSb2.append("-----------------------------" + "\n");
 
         byte[] titleByte	= Printer.printfont(receiptHead, FontDefine.FONT_32PX,FontDefine.Align_CENTER,
