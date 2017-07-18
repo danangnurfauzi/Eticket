@@ -133,8 +133,6 @@ public class Dashboard extends AppCompatActivity {
 
         getDateWeekend();
 
-        showToast(sb.toString());
-
         // This overrides the radiogroup onCheckListener
         radioWisman.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
