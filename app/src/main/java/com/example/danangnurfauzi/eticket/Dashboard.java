@@ -53,6 +53,7 @@ import java.text.DateFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
@@ -72,7 +73,7 @@ public class Dashboard extends AppCompatActivity {
 
     private BluetoothAdapter mBluetoothAdapter;
     private ArrayList<BluetoothDevice> mDeviceList = new ArrayList<BluetoothDevice>();
-    private ArrayList<String> weekends;
+    private ArrayList<String> weekends = new ArrayList<String>();
     private RadioGroup radioWisman, radioKendaraan;
     private EditText jumlahOrang, price;
 
@@ -82,18 +83,17 @@ public class Dashboard extends AppCompatActivity {
     private SQLiteHandler db;
     private SessionManager session;
 
-    private String thisYear                         = new SimpleDateFormat("yyyy").format(new Date());
-    private String URL_WEEKEND_DATA                 = "http://118.97.50.196/union/api/etiketing/getWeekendDate/" + thisYear;
-    private static final String URL_DATA            = "http://118.97.50.196/union/api/etiketing/getHargaTiketLokasiWisata/59";
-    private static final String TAG_DATA_WEEKEND    = "data_weekend";
-    private static final String TAG_KODE_MJP        = "kode_mjp";
-    private static final String TAG_JENIS_WISATA    = "jenis_wisata";
-    private static final String TAG_JENIS_HARI      = "jenis_hari";
-    private static final String TAG_HARGA           = "harga";
-    private static final String TAG                 = "Dashboard";
-    private static final String JSON_ARRAY  = "result";
+    private String thisYear = new SimpleDateFormat("yyyy").format(new Date());
+    private String URL_WEEKEND_DATA = "http://118.97.50.196/union/api/etiketing/getWeekendDate/" + thisYear;
+    private static final String URL_DATA = "http://118.97.50.196/union/api/etiketing/getHargaTiketLokasiWisata/59";
+    private static final String TAG_KODE_MJP = "kode_mjp";
+    private static final String TAG_JENIS_WISATA = "jenis_wisata";
+    private static final String TAG_JENIS_HARI = "jenis_hari";
+    private static final String TAG_HARGA = "harga";
+    private static final String TAG = "Dashboard";
+    private static final String JSON_ARRAY = "result";
     private JSONArray result;
-    ArrayList<HashMap<String,String>> hargaItems, weekendDate;
+    ArrayList<HashMap<String, String>> hargaItems, weekendDate;
 
     private ProgressDialog mProgressDlg;
     private ProgressDialog mConnectingDlg;
@@ -104,53 +104,47 @@ public class Dashboard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.form_operator_loket);
 
-        roleLabel       = (TextView) findViewById(R.id.role_label);
-        kendaraanLabel  = (TextView) findViewById(R.id.kendaraan_label);
-        pengunjungLabel = (TextView) findViewById(R.id.pengunjung_label);
-        priceLabel      = (TextView) findViewById(R.id.price_label);
-        mCetakBtn       = (Button) findViewById(R.id.cetakTiket);
-        mEnableBtn      = (Button) findViewById(R.id.btn_enable);
-        mConnectBtn     = (Button) findViewById(R.id.btn_connect);
-        mDeviceSp       = (Spinner) findViewById(R.id.sp_device);
+        roleLabel           = (TextView) findViewById(R.id.role_label);
+        kendaraanLabel      = (TextView) findViewById(R.id.kendaraan_label);
+        pengunjungLabel     = (TextView) findViewById(R.id.pengunjung_label);
+        priceLabel          = (TextView) findViewById(R.id.price_label);
+        mCetakBtn           = (Button) findViewById(R.id.cetakTiket);
+        mEnableBtn          = (Button) findViewById(R.id.btn_enable);
+        mConnectBtn         = (Button) findViewById(R.id.btn_connect);
+        mDeviceSp           = (Spinner) findViewById(R.id.sp_device);
+        radioWisman         = (RadioGroup) findViewById(R.id.jenis_pengunjung);
+        radioKendaraan      = (RadioGroup) findViewById(R.id.kendaraan);
+        jumlahOrang         = (EditText) findViewById(R.id.jumlah_orang);
+        price               = (EditText) findViewById(R.id.price);
 
-        // SqLite database handler
-        db = new SQLiteHandler(getApplicationContext());
-
-        // session manager
+        db      = new SQLiteHandler(getApplicationContext());
         session = new SessionManager(getApplicationContext());
-
         if (!session.isLoggedIn()) {
             logOutUser();
         }
 
-        //// Fetching user details from sqlite
         HashMap<String, String> user = db.getUserDetails();
+        String nameSql              = user.get("name");
+        String jenisUserSql         = user.get("jenisUser");
+        String userAksesLokerSql    = user.get("userAksesLoker");
+        String pAksesLokerSql       = user.get("pAksesLoker");
 
-        String nameSql = user.get("name");
-        String jenisUserSql = user.get("jenisUser");
-        String userAksesLokerSql = user.get("userAksesLoker");
-        String pAksesLokerSql = user.get("pAksesLoker");
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        mBluetoothAdapter	= BluetoothAdapter.getDefaultAdapter();
+        getDateWeekend();
 
-        radioWisman     = (RadioGroup) findViewById(R.id.jenis_pengunjung);
-        radioKendaraan  = (RadioGroup) findViewById(R.id.kendaraan);
-        jumlahOrang     = (EditText) findViewById(R.id.jumlah_orang);
-        price           = (EditText) findViewById(R.id.price);
+        showToast(sb.toString());
 
         // This overrides the radiogroup onCheckListener
-        radioWisman.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
-            public void onCheckedChanged(RadioGroup group, int checkedId)
-            {
+        radioWisman.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
                 // This will get the radiobutton that has changed in its check state
-                RadioButton checkedRadioButton = (RadioButton)group.findViewById(checkedId);
+                RadioButton checkedRadioButton = (RadioButton) group.findViewById(checkedId);
                 // This puts the value (true/false) into the variable
                 boolean isChecked = checkedRadioButton.isChecked();
                 // If the radiobutton that has changed in check state is now checked...
                 String nilai1;
-                if (isChecked)
-                {
+                if (isChecked) {
                     // Changes the textview's text to "Checked: example radiobutton text"
                     //price.setText("Checked:" + checkedRadioButton.getText());
                     /*if(checkedRadioButton.getText().equals("Nusantara")){
@@ -167,18 +161,15 @@ public class Dashboard extends AppCompatActivity {
             }
         });
 
-        radioKendaraan.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
-            public void onCheckedChanged(RadioGroup group, int checkedId)
-            {
+        radioKendaraan.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
                 // This will get the radiobutton that has changed in its check state
-                RadioButton checkedRadioButton = (RadioButton)group.findViewById(checkedId);
+                RadioButton checkedRadioButton = (RadioButton) group.findViewById(checkedId);
                 // This puts the value (true/false) into the variable
                 boolean isChecked = checkedRadioButton.isChecked();
                 // If the radiobutton that has changed in check state is now checked...
                 String nilai1;
-                if (isChecked)
-                {
+                if (isChecked) {
                     // Changes the textview's text to "Checked: example radiobutton text"
                     //price.setText("Checked:" + checkedRadioButton.getText());
                     /*if(checkedRadioButton.getText().equals("Nusantara")){
@@ -213,27 +204,25 @@ public class Dashboard extends AppCompatActivity {
             }
         });
 
-        if(mBluetoothAdapter == null){
+        if (mBluetoothAdapter == null) {
             showUnsupported();
             showDisabled();
-        }else {
+        } else {
             if (!mBluetoothAdapter.isEnabled()) {
                 showDisonnected();
                 showDisabled();
             } else {
                 showConnected();
                 showEnabled();
-
                 Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
                 if (pairedDevices != null) {
                     mDeviceList.addAll(pairedDevices);
-
                     updateDeviceList();
                 }
             }
 
-            mProgressDlg 	= new ProgressDialog(this);
+            mProgressDlg = new ProgressDialog(this);
 
             mProgressDlg.setMessage("Scanning...");
             mProgressDlg.setCancelable(false);
@@ -246,7 +235,7 @@ public class Dashboard extends AppCompatActivity {
                 }
             });
 
-            mConnectingDlg 	= new ProgressDialog(this);
+            mConnectingDlg = new ProgressDialog(this);
 
             mConnectingDlg.setMessage("Connecting...");
             mConnectingDlg.setCancelable(false);
@@ -258,7 +247,7 @@ public class Dashboard extends AppCompatActivity {
                 }
             });
 
-            mConnector 		= new P25Connector(new P25Connector.P25ConnectionListener() {
+            mConnector = new P25Connector(new P25Connector.P25ConnectionListener() {
 
                 @Override
                 public void onStartConnecting() {
@@ -319,10 +308,9 @@ public class Dashboard extends AppCompatActivity {
         filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
 
         registerReceiver(mReceiver, filter);
-
     }
 
-    private void getHarga(){
+    /*private void getHarga(){
         hargaItems = new ArrayList<>();
 
         String cancel_req_tag = "Dashboard";
@@ -378,10 +366,10 @@ public class Dashboard extends AppCompatActivity {
                         ListView listView = (ListView) getActivity().findViewById(R.id.list_view);
                         listView.setAdapter(adapter);
                         hideDialog();*/
-                    }
+                    //}
 
                     //getData(result);
-                } catch (JSONException e) {
+               /* } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
@@ -406,9 +394,9 @@ public class Dashboard extends AppCompatActivity {
         };
         // Adding request to request queue
         AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq,cancel_req_tag);
-    }
+    }*/
 
-    private void getDataWeekend(){
+    /*private void getDateWeekend(){
         String cancel_req_tag = "Dashboard";
         //showDialog();
 
@@ -466,14 +454,12 @@ public class Dashboard extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-
-    }
+    }*/
 
     private void getDateWeekend(){
         weekendDate = new ArrayList<>();
-        String[] weekend;
 
-        String cancel_req_tag = "Dashboard";
+        String cancel_req_tag = TAG;
         //if (!mProgressDlg.isShowing())
         //progressDialog.show();
 
@@ -495,10 +481,8 @@ public class Dashboard extends AppCompatActivity {
                     for(int i = 0; i < result.length(); i++) {
                         JSONObject c = result.getJSONObject(i);
 
-                         weekend     = c.getString("weekend");
+                        weekends.add(c.getString("weekend"));
                     }
-
-                    return weekend;
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -548,23 +532,26 @@ public class Dashboard extends AppCompatActivity {
         SimpleDateFormat dates = new SimpleDateFormat("yyyy/MM/dd");
         Date today = Calendar.getInstance().getTime();
         String reportDate = dates.format(today);
-        String[] holiday = getDateWeekend();
-        String[] harga = getHarga();
+        getDateWeekend();
+        //String[] harga = getHarga();
 
         //JIKA HARI WEEKEND
         if (dayOfTheWeek == "Saturday" || dayOfTheWeek == "Sunday") {
-            if(harga["kode_mjp"] == 1 ) {
-                showToast("kodemjpnya satu");
+            for(int i=0; i<weekends.size();i++) {
+                System.out.println("Data ke "+(i+1)+" adalah "+weekends.get(i));
             }
         } else {
-            for (int indeks = 0 ; indeks < holiday.length();indeks++ ){
+            for(int i=0; i<weekends.size();i++) {
+                System.out.println("Data ke "+(i+1)+" adalah "+weekends.get(i));
+            }
+            /*for (int indeks = 0 ; indeks < holiday.length();indeks++ ){
                 //JIKA HARI LIBUR
                 if (reportDate == holiday[indeks]){
                     if(harga["kode_mjp"] == 2 ) {
                         showToast("kodemjpnya dua");
                     }
                 }
-            }
+            }*/
         }
 
         int wisnu = 20000;
