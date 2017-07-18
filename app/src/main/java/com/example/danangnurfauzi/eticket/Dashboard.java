@@ -409,10 +409,10 @@ public class Dashboard extends AppCompatActivity {
     }
 
     private void getDataWeekend(){
-        String cancel_req_tag = "addstoragepoint";
+        String cancel_req_tag = "Dashboard";
         //showDialog();
 
-        StringRequest strReq = new StringRequest(Request.Method.POST,
+        StringRequest strReq = new StringRequest(Request.Method.GET,
                 URL_WEEKEND_DATA, new Response.Listener<String>() {
 
             @Override
@@ -446,7 +446,7 @@ public class Dashboard extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 // Posting params to register url
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("mobile", "true");
+                //params.put("mobile", "true");
                 return params;
             }
         };
