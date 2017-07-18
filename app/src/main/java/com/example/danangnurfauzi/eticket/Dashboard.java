@@ -1,17 +1,18 @@
 package com.example.danangnurfauzi.eticket;
 
-import com.example.danangnurfauzi.eticket.R;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import android.util.Log;
 import com.example.danangnurfauzi.eticket.pockdata.PocketPos;
 
 import com.example.danangnurfauzi.eticket.util.DateUtil;
-import com.example.danangnurfauzi.eticket.util.FileOperation;
 import com.example.danangnurfauzi.eticket.util.FontDefine;
 import com.example.danangnurfauzi.eticket.pockdata.Printer;
 import com.example.danangnurfauzi.eticket.util.StringUtil;
-import com.example.danangnurfauzi.eticket.util.Util;
-import com.example.danangnurfauzi.eticket.util.DataConstants;
-
-import android.os.Build;
 import android.os.Bundle;
 
 import android.support.v7.app.AppCompatActivity;
@@ -22,9 +23,11 @@ import android.view.MenuItem;
 import android.view.View;
 
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.SimpleAdapter;
 import android.widget.RadioGroup;
-import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Button;
 import android.widget.ArrayAdapter;
@@ -46,12 +49,24 @@ import android.app.ProgressDialog;
 import com.example.danangnurfauzi.eticket.util.P25Connector;
 
 import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+<<<<<<< HEAD
+=======
+import java.util.Arrays;
+>>>>>>> origin/anhar
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Set;
-import java.util.*;
 import java.math.BigInteger;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by danangnurfauzi on 7/11/17.
@@ -61,13 +76,46 @@ public class Dashboard extends AppCompatActivity {
 
     private BluetoothAdapter mBluetoothAdapter;
     private ArrayList<BluetoothDevice> mDeviceList = new ArrayList<BluetoothDevice>();
+<<<<<<< HEAD
+    private ArrayList<String> weekends;
+=======
+    private ArrayList<String> weekends = new ArrayList<String>();
+>>>>>>> origin/anhar
+    private RadioGroup radioWisman, radioKendaraan;
+    private EditText jumlahOrang, price;
 
-    private Button mCetakBtn;
-    private Button mConnectBtn;
-    private Button mEnableBtn;
+    private Button mCetakBtn, mConnectBtn, mEnableBtn;
+    private TextView roleLabel, kendaraanLabel, pengunjungLabel, priceLabel;
     private Spinner mDeviceSp;
     private SQLiteHandler db;
     private SessionManager session;
+
+<<<<<<< HEAD
+    private String thisYear                         = new SimpleDateFormat("yyyy").format(new Date());
+    private String URL_WEEKEND_DATA                 = "http://118.97.50.196/union/api/etiketing/getWeekendDate/" + thisYear;
+    private static final String URL_DATA            = "http://118.97.50.196/union/api/etiketing/getHargaTiketLokasiWisata/59";
+    private static final String TAG_DATA_WEEKEND    = "data_weekend";
+    private static final String TAG_KODE_MJP        = "kode_mjp";
+    private static final String TAG_JENIS_WISATA    = "jenis_wisata";
+    private static final String TAG_JENIS_HARI      = "jenis_hari";
+    private static final String TAG_HARGA           = "harga";
+    private static final String TAG                 = "Dashboard";
+    private static final String JSON_ARRAY  = "result";
+    private JSONArray result;
+    ArrayList<HashMap<String,String>> hargaItems, weekendDate;
+=======
+    private String thisYear = new SimpleDateFormat("yyyy").format(new Date());
+    private String URL_WEEKEND_DATA = "http://118.97.50.196/union/api/etiketing/getWeekendDate/" + thisYear;
+    private static final String URL_DATA = "http://118.97.50.196/union/api/etiketing/getHargaTiketLokasiWisata/59";
+    private static final String TAG_KODE_MJP = "kode_mjp";
+    private static final String TAG_JENIS_WISATA = "jenis_wisata";
+    private static final String TAG_JENIS_HARI = "jenis_hari";
+    private static final String TAG_HARGA = "harga";
+    private static final String TAG = "Dashboard";
+    private static final String JSON_ARRAY = "result";
+    private JSONArray result;
+    ArrayList<HashMap<String, String>> hargaItems, weekendDate;
+>>>>>>> origin/anhar
 
     private ProgressDialog mProgressDlg;
     private ProgressDialog mConnectingDlg;
@@ -78,49 +126,45 @@ public class Dashboard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.form_operator_loket);
 
-        mCetakBtn   = (Button) findViewById(R.id.cetakTiket);
-        mEnableBtn  = (Button) findViewById(R.id.btn_enable);
-        mConnectBtn = (Button) findViewById(R.id.btn_connect);
-        mDeviceSp   = (Spinner) findViewById(R.id.sp_device);
+        roleLabel           = (TextView) findViewById(R.id.role_label);
+        kendaraanLabel      = (TextView) findViewById(R.id.kendaraan_label);
+        pengunjungLabel     = (TextView) findViewById(R.id.pengunjung_label);
+        priceLabel          = (TextView) findViewById(R.id.price_label);
+        mCetakBtn           = (Button) findViewById(R.id.cetakTiket);
+        mEnableBtn          = (Button) findViewById(R.id.btn_enable);
+        mConnectBtn         = (Button) findViewById(R.id.btn_connect);
+        mDeviceSp           = (Spinner) findViewById(R.id.sp_device);
+        radioWisman         = (RadioGroup) findViewById(R.id.jenis_pengunjung);
+        radioKendaraan      = (RadioGroup) findViewById(R.id.kendaraan);
+        jumlahOrang         = (EditText) findViewById(R.id.jumlah_orang);
+        price               = (EditText) findViewById(R.id.price);
 
-        // SqLite database handler
-        db = new SQLiteHandler(getApplicationContext());
-
-        // session manager
+        db      = new SQLiteHandler(getApplicationContext());
         session = new SessionManager(getApplicationContext());
-
         if (!session.isLoggedIn()) {
             logOutUser();
         }
 
-        //// Fetching user details from sqlite
         HashMap<String, String> user = db.getUserDetails();
+        String nameSql              = user.get("name");
+        String jenisUserSql         = user.get("jenisUser");
+        String userAksesLokerSql    = user.get("userAksesLoker");
+        String pAksesLokerSql       = user.get("pAksesLoker");
 
-        String nameSql = user.get("name");
-        String jenisUserSql = user.get("jenisUser");
-        String userAksesLokerSql = user.get("userAksesLoker");
-        String pAksesLokerSql = user.get("pAksesLoker");
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        mBluetoothAdapter	= BluetoothAdapter.getDefaultAdapter();
-
-        RadioGroup radioWisman     = (RadioGroup) findViewById(R.id.jenis_pengunjung);
-        RadioGroup radioKendaraan  = (RadioGroup) findViewById(R.id.kendaraan);
-        EditText jumlahOrang       = (EditText) findViewById(R.id.jumlah_orang);
-        final EditText price             = (EditText) findViewById(R.id.price);
+        getDateWeekend();
 
         // This overrides the radiogroup onCheckListener
-        radioWisman.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
-            public void onCheckedChanged(RadioGroup group, int checkedId)
-            {
+        radioWisman.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
                 // This will get the radiobutton that has changed in its check state
-                RadioButton checkedRadioButton = (RadioButton)group.findViewById(checkedId);
+                RadioButton checkedRadioButton = (RadioButton) group.findViewById(checkedId);
                 // This puts the value (true/false) into the variable
                 boolean isChecked = checkedRadioButton.isChecked();
                 // If the radiobutton that has changed in check state is now checked...
                 String nilai1;
-                if (isChecked)
-                {
+                if (isChecked) {
                     // Changes the textview's text to "Checked: example radiobutton text"
                     //price.setText("Checked:" + checkedRadioButton.getText());
                     /*if(checkedRadioButton.getText().equals("Nusantara")){
@@ -137,18 +181,15 @@ public class Dashboard extends AppCompatActivity {
             }
         });
 
-        radioKendaraan.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
-            public void onCheckedChanged(RadioGroup group, int checkedId)
-            {
+        radioKendaraan.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
                 // This will get the radiobutton that has changed in its check state
-                RadioButton checkedRadioButton = (RadioButton)group.findViewById(checkedId);
+                RadioButton checkedRadioButton = (RadioButton) group.findViewById(checkedId);
                 // This puts the value (true/false) into the variable
                 boolean isChecked = checkedRadioButton.isChecked();
                 // If the radiobutton that has changed in check state is now checked...
                 String nilai1;
-                if (isChecked)
-                {
+                if (isChecked) {
                     // Changes the textview's text to "Checked: example radiobutton text"
                     //price.setText("Checked:" + checkedRadioButton.getText());
                     /*if(checkedRadioButton.getText().equals("Nusantara")){
@@ -183,26 +224,29 @@ public class Dashboard extends AppCompatActivity {
             }
         });
 
+<<<<<<< HEAD
         if(mBluetoothAdapter == null){
-            showToast("HP ne ra nduwe bluetooth :') ");
-        }else {
+=======
+        if (mBluetoothAdapter == null) {
+>>>>>>> origin/anhar
+            showUnsupported();
+            showDisabled();
+        } else {
             if (!mBluetoothAdapter.isEnabled()) {
-                //showToast("Bluetooth e mati :') ");
+                showDisonnected();
                 showDisabled();
             } else {
-                //showToast("Bluetooth e joss :') ");
+                showConnected();
                 showEnabled();
-
                 Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
                 if (pairedDevices != null) {
                     mDeviceList.addAll(pairedDevices);
-
                     updateDeviceList();
                 }
             }
 
-            mProgressDlg 	= new ProgressDialog(this);
+            mProgressDlg = new ProgressDialog(this);
 
             mProgressDlg.setMessage("Scanning...");
             mProgressDlg.setCancelable(false);
@@ -215,7 +259,7 @@ public class Dashboard extends AppCompatActivity {
                 }
             });
 
-            mConnectingDlg 	= new ProgressDialog(this);
+            mConnectingDlg = new ProgressDialog(this);
 
             mConnectingDlg.setMessage("Connecting...");
             mConnectingDlg.setCancelable(false);
@@ -227,7 +271,7 @@ public class Dashboard extends AppCompatActivity {
                 }
             });
 
-            mConnector 		= new P25Connector(new P25Connector.P25ConnectionListener() {
+            mConnector = new P25Connector(new P25Connector.P25ConnectionListener() {
 
                 @Override
                 public void onStartConnecting() {
@@ -265,7 +309,9 @@ public class Dashboard extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 
-                startActivityForResult(intent, 1000);
+                finish();
+                startActivity(getIntent());
+                //startActivityForResult(intent, 1000);
             }
         });
 
@@ -286,13 +332,371 @@ public class Dashboard extends AppCompatActivity {
         filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
 
         registerReceiver(mReceiver, filter);
-
     }
 
+    /*private void getHarga(){
+        hargaItems = new ArrayList<>();
+
+        String cancel_req_tag = "Dashboard";
+        //if (!mProgressDlg.isShowing())
+        //progressDialog.show();
+
+        StringRequest strReq = new StringRequest(Request.Method.GET,
+                URL_DATA, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "Register Response: " + response.toString());
+                //hideDialog();
+
+                try {
+                    JSONObject j = null;
+                    //Parsing the fetched Json String to JSON Object
+                    j = new JSONObject(response);
+                    result = j.getJSONArray(JSON_ARRAY);
+
+                    getHome(result);
+
+                    //Parsing the fetched Json String to JSON Object
+                    JSONObject json = null;
+                    //Parsing the fetched Json String to JSON Object
+                    json = new JSONObject(response);
+                    result = json.getJSONArray(JSON_ARRAY);
+
+                    for(int i = 0; i < result.length(); i++) {
+                        JSONObject c = result.getJSONObject(i);
+
+                        String kode_mjp     = c.getString("kode_mjp");
+                        String jenis_wisata = c.getString("jenis_wisata");
+                        String jenis_hari   = c.getString("jenis_hari");
+                        String harga        = c.getString("harga");
+
+                        // tmp hash map for single contact
+                        HashMap<String, String> hargaPerItem = new HashMap<>();
+
+                        // adding each child node to HashMap key => value
+                        hargaPerItem.put("kode_mjp", kode_mjp);
+                        hargaPerItem.put("jenis_wisata", jenis_wisata);
+                        hargaPerItem.put("jenis_hari", jenis_hari);
+                        hargaPerItem.put("harga", harga);
+
+                        hargaItems.add(hargaPerItem);
+
+                        return hargaItems;
+                        /*ListAdapter adapter = new SimpleAdapter(getActivity(), storagePointItems, R.layout.list_item,
+                                new String[]{"nama", "alamat", "telepon", "pic", "latitude", "longitude", "id"},
+                                new int[]{R.id.nama, R.id.alamat, R.id.telepon, R.id.pic, R.id.latitude, R.id.longitude, R.id.id,});
+                        //adapter.notifyDataSetChanged();
+                        ListView listView = (ListView) getActivity().findViewById(R.id.list_view);
+                        listView.setAdapter(adapter);
+                        hideDialog();*/
+                    //}
+
+                    //getData(result);
+               /* } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Registration Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_LONG).show();
+                //hideDialog();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                //params.put("mobile", "true");
+                return params;
+            }
+        };
+        // Adding request to request queue
+        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq,cancel_req_tag);
+    }*/
+
+    /*private void getDateWeekend(){
+        String cancel_req_tag = "Dashboard";
+        //showDialog();
+
+        StringRequest strReq = new StringRequest(Request.Method.GET,
+                URL_WEEKEND_DATA, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "Register Response: " + response.toString());
+                //hideDialog();
+
+                try {
+                    JSONObject j = null;
+                    //Parsing the fetched Json String to JSON Object
+                    j = new JSONObject(response);
+                    result = j.getJSONArray(JSON_ARRAY);
+
+                    getWeekend(result);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Registration Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_LONG).show();
+                //hideDialog();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                //params.put("mobile", "true");
+                return params;
+            }
+        };
+        // Adding request to request queue
+        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq, cancel_req_tag);
+    }
+
+<<<<<<< HEAD
+<<<<<<< HEAD
     /**
      * Logging out the user. Will set isLoggedIn flag to false in shared
      * preferences Clears the user data from sqlite users table
      * */
+=======
+    private void getHarga(){
+        hargaItems = new ArrayList<>();
+
+        String cancel_req_tag = "Dashboard";
+        //if (!mProgressDlg.isShowing())
+        //progressDialog.show();
+
+        StringRequest strReq = new StringRequest(Request.Method.GET,
+                URL_DATA, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "Register Response: " + response.toString());
+                //hideDialog();
+
+                try {
+                    JSONObject j = null;
+                    //Parsing the fetched Json String to JSON Object
+                    j = new JSONObject(response);
+                    result = j.getJSONArray(JSON_ARRAY);
+
+                    getHome(result);
+
+                    //Parsing the fetched Json String to JSON Object
+                    JSONObject json = null;
+                    //Parsing the fetched Json String to JSON Object
+                    json = new JSONObject(response);
+                    result = json.getJSONArray(JSON_ARRAY);
+
+                    for(int i = 0; i < result.length(); i++) {
+                        JSONObject c = result.getJSONObject(i);
+
+                        String kode_mjp     = c.getString("kode_mjp");
+                        String jenis_wisata = c.getString("jenis_wisata");
+                        String jenis_hari   = c.getString("jenis_hari");
+                        String harga        = c.getString("harga");
+
+                        // tmp hash map for single contact
+                        HashMap<String, String> hargaPerItem = new HashMap<>();
+
+                        // adding each child node to HashMap key => value
+                        hargaPerItem.put("kode_mjp", kode_mjp);
+                        hargaPerItem.put("jenis_wisata", jenis_wisata);
+                        hargaPerItem.put("jenis_hari", jenis_hari);
+                        hargaPerItem.put("harga", harga);
+
+                        hargaItems.add(hargaPerItem);
+
+                        return hargaItems;
+                        /*ListAdapter adapter = new SimpleAdapter(getActivity(), storagePointItems, R.layout.list_item,
+                                new String[]{"nama", "alamat", "telepon", "pic", "latitude", "longitude", "id"},
+                                new int[]{R.id.nama, R.id.alamat, R.id.telepon, R.id.pic, R.id.latitude, R.id.longitude, R.id.id,});
+                        //adapter.notifyDataSetChanged();
+                        ListView listView = (ListView) getActivity().findViewById(R.id.list_view);
+                        listView.setAdapter(adapter);
+                        hideDialog();*/
+                    }
+
+                    //getData(result);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Registration Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_LONG).show();
+                //hideDialog();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                //params.put("mobile", "true");
+                return params;
+            }
+        };
+        // Adding request to request queue
+        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq,cancel_req_tag);
+    }
+
+    private void getDataWeekend(){
+        String cancel_req_tag = "Dashboard";
+        //showDialog();
+
+        StringRequest strReq = new StringRequest(Request.Method.GET,
+                URL_WEEKEND_DATA, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "Register Response: " + response.toString());
+                //hideDialog();
+
+                try {
+                    JSONObject j = null;
+                    //Parsing the fetched Json String to JSON Object
+                    j = new JSONObject(response);
+                    result = j.getJSONArray(JSON_ARRAY);
+
+                    getWeekend(result);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Registration Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_LONG).show();
+                //hideDialog();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                //params.put("mobile", "true");
+                return params;
+            }
+        };
+        // Adding request to request queue
+        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq, cancel_req_tag);
+    }
+
+=======
+>>>>>>> origin/anhar
+    private void getWeekend(JSONArray j){
+        //Traversing through all the items in the json array
+        for(int i=0;i<j.length();i++){
+            try {
+                //Getting json object
+                JSONObject json = j.getJSONObject(i);
+
+                weekends.add(json.getString(TAG_DATA_WEEKEND));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+<<<<<<< HEAD
+
+    }
+
+    private void getDateWeekend(){
+        weekendDate = new ArrayList<>();
+        String[] weekend;
+
+        String cancel_req_tag = "Dashboard";
+=======
+    }*/
+
+    private void getDateWeekend(){
+        weekendDate = new ArrayList<>();
+
+        String cancel_req_tag = TAG;
+>>>>>>> origin/anhar
+        //if (!mProgressDlg.isShowing())
+        //progressDialog.show();
+
+        StringRequest strReq = new StringRequest(Request.Method.GET,
+                URL_WEEKEND_DATA, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "Register Response: " + response.toString());
+                //hideDialog();
+
+                try {
+                    //Parsing the fetched Json String to JSON Object
+                    JSONObject json = null;
+                    //Parsing the fetched Json String to JSON Object
+                    json = new JSONObject(response);
+                    result = json.getJSONArray(JSON_ARRAY);
+
+                    for(int i = 0; i < result.length(); i++) {
+                        JSONObject c = result.getJSONObject(i);
+
+<<<<<<< HEAD
+                         weekend     = c.getString("weekend");
+                    }
+
+                    return weekend;
+=======
+                        weekends.add(c.getString("weekend"));
+                    }
+>>>>>>> origin/anhar
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Registration Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_LONG).show();
+                //hideDialog();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                //params.put("mobile", "true");
+                return params;
+            }
+        };
+        // Adding request to request queue
+        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq,cancel_req_tag);
+    }
+
+<<<<<<< HEAD
+>>>>>>> origin/anhar
+=======
+>>>>>>> origin/anhar
     private void logOutUser() {
         session.setLogin(false);
 
@@ -305,6 +709,54 @@ public class Dashboard extends AppCompatActivity {
     }
 
     private String hitungHargaTiket(){
+
+        //Day Recognition
+        SimpleDateFormat days = new SimpleDateFormat("EEEE");
+        Date d = new Date();
+        String dayOfTheWeek = days.format(d);
+
+        //Date Recognition
+        SimpleDateFormat dates = new SimpleDateFormat("yyyy/MM/dd");
+        Date today = Calendar.getInstance().getTime();
+        String reportDate = dates.format(today);
+<<<<<<< HEAD
+        String[] holiday = getDateWeekend();
+        String[] harga = getHarga();
+
+        //JIKA HARI WEEKEND
+        if (dayOfTheWeek == "Saturday" || dayOfTheWeek == "Sunday") {
+            if(harga["kode_mjp"] == 1 ) {
+                showToast("kodemjpnya satu");
+            }
+        } else {
+            for (int indeks = 0 ; indeks < holiday.length();indeks++ ){
+=======
+        getDateWeekend();
+        //String[] harga = getHarga();
+
+        //JIKA HARI WEEKEND
+        if (dayOfTheWeek == "Saturday" || dayOfTheWeek == "Sunday") {
+            for(int i=0; i<weekends.size();i++) {
+                System.out.println("Data ke "+(i+1)+" adalah "+weekends.get(i));
+            }
+        } else {
+            for(int i=0; i<weekends.size();i++) {
+                System.out.println("Data ke "+(i+1)+" adalah "+weekends.get(i));
+            }
+            /*for (int indeks = 0 ; indeks < holiday.length();indeks++ ){
+>>>>>>> origin/anhar
+                //JIKA HARI LIBUR
+                if (reportDate == holiday[indeks]){
+                    if(harga["kode_mjp"] == 2 ) {
+                        showToast("kodemjpnya dua");
+                    }
+                }
+<<<<<<< HEAD
+            }
+=======
+            }*/
+>>>>>>> origin/anhar
+        }
 
         int wisnu = 20000;
         int wisman = 50000;
@@ -406,7 +858,7 @@ public class Dashboard extends AppCompatActivity {
         if(wis.isChecked())
         {
             hargaWisatawanNusantara = wisnu;
-            wawan = "DOM";
+            wawan = "WISNU";
         }
         else
         {
@@ -418,7 +870,7 @@ public class Dashboard extends AppCompatActivity {
         if(jem.isChecked())
         {
             hargaWisatawanMancanegara = wisman;
-            wiwin = "MANCA";
+            wiwin = "WISMAN";
         }
         else
         {
@@ -749,21 +1201,40 @@ public class Dashboard extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu){
 
         getMenuInflater().inflate(R.menu.menu,menu);
+        MenuItem actionScan = menu.findItem(R.id.action_scan);
+
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        // show the button when some condition is true
+        if (mBluetoothAdapter == null) {
+            actionScan.setVisible(false);
+        } else {
+            if(!mBluetoothAdapter.isEnabled()) {
+                actionScan.setVisible(false);
+            } else {
+                actionScan.setVisible(true);
+            }
+        }
 
         return super.onCreateOptionsMenu(menu);
-
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-
         if (item.getItemId() == R.id.action_scan) {
             mBluetoothAdapter.startDiscovery();
             finish();
             startActivity(getIntent());
-
         } else if (item.getItemId() == R.id.log_out){
             logOutUser();
+<<<<<<< HEAD
+<<<<<<< HEAD
+            finish();
+            startActivity(getIntent());
 
+=======
+>>>>>>> origin/anhar
+=======
+>>>>>>> origin/anhar
         }
 
         return super.onOptionsItemSelected(item);
@@ -799,17 +1270,35 @@ public class Dashboard extends AppCompatActivity {
     private void showDisabled() {
         showToast("Bluetooth disabled");
 
-        mEnableBtn.setVisibility(View.VISIBLE);
+        roleLabel.setVisibility(View.GONE);
+        kendaraanLabel.setVisibility(View.GONE);
+        pengunjungLabel.setVisibility(View.GONE);
+        priceLabel.setVisibility(View.GONE);
+        radioWisman.setVisibility(View.GONE);
+        radioKendaraan.setVisibility(View.GONE);
+        jumlahOrang.setVisibility(View.GONE);
+        price.setVisibility(View.GONE);
+        mCetakBtn.setVisibility(View.GONE);
         mConnectBtn.setVisibility(View.GONE);
         mDeviceSp.setVisibility(View.GONE);
+        mEnableBtn.setVisibility(View.VISIBLE);
     }
 
     private void showEnabled() {
         showToast("Bluetooth enabled");
 
-        mEnableBtn.setVisibility(View.GONE);
+        roleLabel.setVisibility(View.VISIBLE);
+        kendaraanLabel.setVisibility(View.VISIBLE);
+        pengunjungLabel.setVisibility(View.VISIBLE);
+        priceLabel.setVisibility(View.VISIBLE);
+        radioWisman.setVisibility(View.VISIBLE);
+        radioKendaraan.setVisibility(View.VISIBLE);
+        jumlahOrang.setVisibility(View.VISIBLE);
+        price.setVisibility(View.VISIBLE);
+        mCetakBtn.setVisibility(View.VISIBLE);
         mConnectBtn.setVisibility(View.VISIBLE);
         mDeviceSp.setVisibility(View.VISIBLE);
+        mEnableBtn.setVisibility(View.GONE);
     }
 
     private void updateDeviceList() {
@@ -914,94 +1403,6 @@ public class Dashboard extends AppCompatActivity {
         mDeviceSp.setEnabled(true);
     }
 
-    private void printDemoContent(){
-
-        /*********** print head*******/
-        String receiptHead = "************************"
-                + "   TIKET MASUK WISATA  "+"\n"
-                + "       KAWAH PUTIH  "+"\n"
-                + "************************"
-                + "\n";
-
-        long milis		= System.currentTimeMillis();
-
-        String date		= DateUtil.timeMilisToString(milis, "MMM dd, yyyy");
-        String time		= DateUtil.timeMilisToString(milis, "hh:mm a");
-
-        String hwDevice	= Build.MANUFACTURER;
-        String hwModel	= Build.MODEL;
-        String osVer	= Build.VERSION.RELEASE;
-        String sdkVer	= String.valueOf(Build.VERSION.SDK_INT);
-
-        StringBuffer receiptHeadBuffer = new StringBuffer(100);
-
-        receiptHeadBuffer.append(receiptHead);
-        receiptHeadBuffer.append(Util.nameLeftValueRightJustify(date, time, DataConstants.RECEIPT_WIDTH) + "\n");
-
-        receiptHeadBuffer.append(Util.nameLeftValueRightJustify("Device:", hwDevice, DataConstants.RECEIPT_WIDTH) + "\n");
-
-        receiptHeadBuffer.append(Util.nameLeftValueRightJustify("Model:",  hwModel, DataConstants.RECEIPT_WIDTH) + "\n");
-        receiptHeadBuffer.append(Util.nameLeftValueRightJustify("OS ver:", osVer, DataConstants.RECEIPT_WIDTH) + "\n");
-        receiptHeadBuffer.append(Util.nameLeftValueRightJustify("SDK:", sdkVer, DataConstants.RECEIPT_WIDTH));
-        receiptHead = receiptHeadBuffer.toString();
-
-        byte[] header = Printer.printfont(receiptHead + "\n", FontDefine.FONT_32PX,FontDefine.Align_CENTER,(byte)0x1A,PocketPos.LANGUAGE_ENGLISH);
-
-
-        /*********** print English text*******/
-        StringBuffer sb = new StringBuffer();
-        for(int i=1; i<128; i++)
-            sb.append((char)i);
-        String content = sb.toString().trim();
-
-        byte[] englishchartext24 			= Printer.printfont(content + "\n",FontDefine.FONT_24PX,FontDefine.Align_CENTER,(byte)0x1A,PocketPos.LANGUAGE_ENGLISH);
-        byte[] englishchartext32			= Printer.printfont(content + "\n",FontDefine.FONT_32PX,FontDefine.Align_CENTER,(byte)0x1A,PocketPos.LANGUAGE_ENGLISH);
-        byte[] englishchartext24underline	= Printer.printfont(content + "\n",FontDefine.FONT_24PX_UNDERLINE,FontDefine.Align_CENTER,(byte)0x1A,PocketPos.LANGUAGE_ENGLISH);
-
-        //2D Bar Code
-        byte[] barcode = StringUtil.hexStringToBytes("1d 6b 02 0d 36 39 30 31 32 33 34 35 36 37 38 39 32");
-
-
-        /*********** print Tail*******/
-        String receiptTail =  "Test Completed" + "\n"
-                + "************************" + "\n";
-
-        String receiptWeb =  "** union project ** " + "\n\n\n";
-
-        byte[] foot = Printer.printfont(receiptTail,FontDefine.FONT_32PX,FontDefine.Align_CENTER,(byte)0x1A,PocketPos.LANGUAGE_ENGLISH);
-        byte[] web	= Printer.printfont(receiptWeb,FontDefine.FONT_32PX,FontDefine.Align_CENTER,(byte)0x1A,PocketPos.LANGUAGE_ENGLISH);
-
-        byte[] totladata =  new byte[header.length + englishchartext24.length + englishchartext32.length + englishchartext24underline.length +
-                + barcode.length
-                + foot.length + web.length
-                ];
-        int offset = 0;
-        System.arraycopy(header, 0, totladata, offset, header.length);
-        offset += header.length;
-
-        System.arraycopy(englishchartext24, 0, totladata, offset, englishchartext24.length);
-        offset+= englishchartext24.length;
-
-        System.arraycopy(englishchartext32, 0, totladata, offset, englishchartext32.length);
-        offset+=englishchartext32.length;
-
-        System.arraycopy(englishchartext24underline, 0, totladata, offset, englishchartext24underline.length);
-        offset+=englishchartext24underline.length;
-
-        System.arraycopy(barcode, 0, totladata, offset, barcode.length);
-        offset+=barcode.length;
-
-        System.arraycopy(foot, 0, totladata, offset, foot.length);
-        offset+=foot.length;
-
-        System.arraycopy(web, 0, totladata, offset, web.length);
-        offset+=web.length;
-
-        byte[] senddata = PocketPos.FramePack(PocketPos.FRAME_TOF_PRINT, totladata, 0, totladata.length);
-
-        sendData(senddata);
-    }
-
     private void printStruk() {
 
         String receiptHead = "\n************************"+"\n"
@@ -1026,7 +1427,13 @@ public class Dashboard extends AppCompatActivity {
         contentSb2.append("--------------------------------" + "\n");
         contentSb2.append("TANGGAL   : " + date + "\n");
         contentSb2.append("OPERATOR  : GANI GAIRAH A." + "\n");
+<<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/anhar
+=======
+>>>>>>> origin/anhar
         contentSb2.append("--------------------------------" + "\n");
 
         String message	= "Perhutani menyatakan struk ini \n  sebagai bukti pembayaran sah" + "\n";
@@ -1243,9 +1650,6 @@ public class Dashboard extends AppCompatActivity {
         byte[] message2Byte	= Printer.printfont(message2, FontDefine.FONT_24PX,FontDefine.Align_CENTER,  (byte)0x1A,
                 PocketPos.LANGUAGE_ENGLISH);
 
-        //byte[] dateByte		= Printer.printfont(date, FontDefine.FONT_24PX,FontDefine.Align_LEFT, (byte)0x1A,
-        //        PocketPos.LANGUAGE_ENGLISH);
-
         byte[] barcode = StringUtil.hexStringToBytes("1d 6b 02 0d 31 33 30 37 31 37 32 30 30 30 30 31 32");
 
         byte[] btmSpaceByte	= Printer.printfont("\n\n", FontDefine.FONT_24PX,FontDefine.Align_CENTER,  (byte)0x1A,
@@ -1280,122 +1684,9 @@ public class Dashboard extends AppCompatActivity {
         System.arraycopy(btmSpaceByte, 0, totalByte, offset, btmSpaceByte.length);
         offset+=btmSpaceByte.length;
 
-        //System.arraycopy(dateByte, 0, totalByte, offset, dateByte.length);
-
         byte[] senddata = PocketPos.FramePack(PocketPos.FRAME_TOF_PRINT, totalByte, 0, totalByte.length);
 
         sendData(senddata);
-    }
-
-    private void printStruk2() {
-
-        StringBuilder header = new StringBuilder();
-
-        header.append("*****************************" + "\n");
-        header.append("TIKET MASUK WISATA" + "\n");
-        header.append("KAWAH PUTIH" + "\n");
-        header.append("*****************************" + "\n");
-
-        StringBuilder contentSb	= new StringBuilder();
-
-        contentSb.append("-----------------------------" + "\n");
-        contentSb.append("TANGGAL   : 12/07/2016 15.19" + "\n");
-        contentSb.append("OPERATOR  : GANI GAIRAH A." + "\n");
-        contentSb.append("-----------------------------" + "\n");
-        contentSb.append("DOMESTIK WD    6     300,000" + "\n");
-        contentSb.append("MOBIL WD       1     150,000" + "\n");
-        contentSb.append("-----------------------------" + "\n");
-        contentSb.append("TOTAL     :          450,000" + "\n");
-        contentSb.append("-----------------------------" + "\n");
-
-        String message	= "Perhutani menyatakan struk ini sebagai bukti pembayaran sah." + "\n";
-
-        String message2	= "Informasi Hubungi Call Center: " + "\n"
-                + "1 500 235 Atau Hub Perhutani Terdekat." + "\n";
-
-        long milis		= System.currentTimeMillis();
-        String date		= DateUtil.timeMilisToString(milis, "dd-MM-yy / HH:mm")  + "\n\n";
-
-        byte[] titleByte	= Printer.printfont(header.toString(), FontDefine.FONT_24PX,FontDefine.Align_CENTER,
-                (byte)0x1A, PocketPos.LANGUAGE_ENGLISH);
-
-        byte[] content1Byte	= Printer.printfont(contentSb.toString(), FontDefine.FONT_24PX,FontDefine.Align_LEFT,
-                (byte)0x1A, PocketPos.LANGUAGE_ENGLISH);
-
-        byte[] messageByte	= Printer.printfont(message, FontDefine.FONT_24PX,FontDefine.Align_CENTER,  (byte)0x1A,
-                PocketPos.LANGUAGE_ENGLISH);
-
-        byte[] message2Byte	= Printer.printfont(message2, FontDefine.FONT_24PX,FontDefine.Align_CENTER,  (byte)0x1A,
-                PocketPos.LANGUAGE_ENGLISH);
-
-        byte[] dateByte		= Printer.printfont(date, FontDefine.FONT_24PX,FontDefine.Align_LEFT, (byte)0x1A,
-                PocketPos.LANGUAGE_ENGLISH);
-
-        byte[] totalByte	= new byte[titleByte.length + content1Byte.length + messageByte.length +
-                 message2Byte.length + dateByte.length];
-
-
-        int offset = 0;
-        System.arraycopy(titleByte, 0, totalByte, offset, titleByte.length);
-        offset += titleByte.length;
-
-        System.arraycopy(content1Byte, 0, totalByte, offset, content1Byte.length);
-        offset += content1Byte.length;
-
-        System.arraycopy(messageByte, 0, totalByte, offset, messageByte.length);
-        offset += messageByte.length;
-
-        System.arraycopy(message2Byte, 0, totalByte, offset, message2Byte.length);
-        offset += message2Byte.length;
-
-        System.arraycopy(dateByte, 0, totalByte, offset, dateByte.length);
-
-        byte[] senddata = PocketPos.FramePack(PocketPos.FRAME_TOF_PRINT, totalByte, 0, totalByte.length);
-
-        //print1DBarcode();
-
-        sendData(senddata);
-
-    }
-
-    private void print1DBarcode() {
-        String content	= "6901234567892";
-
-        //1D barcode format (hex): 1d 6b 02 0d + barcode data
-
-        byte[] formats	= {(byte) 0x1d, (byte) 0x6b, (byte) 0x02, (byte) 0x0d};
-        byte[] contents	= content.getBytes();
-
-        byte[] bytes	= new byte[formats.length + contents.length];
-
-        System.arraycopy(formats, 0, bytes, 0, formats.length);
-        System.arraycopy(contents, 0, bytes, formats.length, contents.length);
-
-        sendData(bytes);
-
-        byte[] newline 	= Printer.printfont("\n\n",FontDefine.FONT_32PX,FontDefine.Align_CENTER,(byte)0x1A,PocketPos.LANGUAGE_ENGLISH);
-
-        sendData(newline);
-    }
-
-    private void print2DBarcode() {
-        String content 	= "Lorenz Blog - www.londatiga.net";
-
-        //2D barcode format (hex) : 1d 6b 10 00 00 00 00 00 1f + barcode data
-
-        byte[] formats	= {(byte) 0x1d, (byte) 0x6b, (byte) 0x10, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-                (byte) 0x00, (byte) 0x1f};
-        byte[] contents	= content.getBytes();
-        byte[] bytes	= new byte[formats.length + contents.length];
-
-        System.arraycopy(formats, 0, bytes, 0, formats.length);
-        System.arraycopy(contents, 0, bytes, formats.length, contents.length);
-
-        sendData(bytes);
-
-        byte[] newline 	= Printer.printfont("\n\n",FontDefine.FONT_32PX,FontDefine.Align_CENTER,(byte)0x1A,PocketPos.LANGUAGE_ENGLISH);
-
-        sendData(newline);
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {

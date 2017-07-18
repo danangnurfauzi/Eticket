@@ -27,7 +27,7 @@
 
         <activity
             android:name=".Dashboard"
-            android:label="form">
+            android:label="Loket Wisata">
         </activity>
     </application>
 
