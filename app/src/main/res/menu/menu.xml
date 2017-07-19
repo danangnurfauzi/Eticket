@@ -4,6 +4,10 @@
         android:id="@+id/action_scan"
         android:showAsAction="always"
         android:title="@string/text_scan_devices"/>
+    <item
+        android:id="@+id/action_sinkron"
+        android:showAsAction="always"
+        android:title="Sinkron Harga Tiket"/>
 
     <item
         android:id="@+id/log_out"

@@ -26,6 +26,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
     // Login table name
     private static final String TABLE_USER = "user";
+    private static final String TABLE_HARGA_TIKET = "harga_tiket";
 
     // Login Table Columns names
     private static final String KEY_ID = "id";
@@ -33,6 +34,12 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String KEY_JENISUSER = "jenisUser";
     private static final String KEY_USERAKSESLOKER = "userAksesLoker";
     private static final String KEY_PAKSESLOKER = "pAksesLoker";
+
+    private static final String HK_ID = "id";
+    private static final String HK_WISNU = "wisnu";
+    private static final String HK_WISMAN = "wisman";
+    private static final String HK_KENDARAAN_YA = "kendaraan_ya";
+    private static final String HK_KENDARAAN_TIDAK = "kendaraan_tidak";
 
     public SQLiteHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -46,6 +53,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                 + KEY_JENISUSER + " TEXT," + KEY_USERAKSESLOKER + " TEXT,"
                 + KEY_PAKSESLOKER + " TEXT" + ")";
         db.execSQL(CREATE_LOGIN_TABLE);
+
+
 
         Log.d(TAG, "Database tables created");
     }
